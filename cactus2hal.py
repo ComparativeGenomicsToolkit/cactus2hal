@@ -20,6 +20,7 @@ from cactus.progressive.multiCactusTree import MultiCactusTree
 from cactus.shared.experimentWrapper import ExperimentWrapper
 from sonLib.bioio import system
 from sonLib.nxnewick import NXNewick
+from toil.job import Job
 
 def initParser():
     parser = argparse.ArgumentParser(description = 'Convert Cactus database to HAL database ', 
@@ -49,12 +50,76 @@ def initParser():
     parser.add_argument('--append', action='store_true', default=False,
                         help='append to an existing hal file instead of '
                         'overwriting')
+    Job.Runner.addToilOptions(parser)
 
     return vars(parser.parse_args())
         
 ########################################################################
 # Main
 ########################################################################
+
+def exportHal(job, project, event=None, cacheBytes=None, cacheMDC=None, cacheRDC=None, cacheW0=None, chunk=None, deflate=None, inMemory=False):
+
+    # some quick stats
+    totalTime = time.time()
+    totalAppendTime = 0
+
+    HALPath = os.path.join(job.fileStore.getLocalTempDir(), "tmp.hal")
+
+    # traverse tree to make sure we are going breadth-first
+    tree = project.mcTree
+
+    # find subtree if event specified
+    rootNode = None
+    if event is not None:
+        assert event in tree.nameToId and not tree.isLeaf(tree.nameToId[event])
+        rootNode = tree.nameToId[event]
+
+    for node in tree.breadthFirstTraversal(rootNode):
+        genomeName = tree.getName(node)
+        if genomeName in project.expMap:
+            experimentFilePath = job.fileStore.readGlobalFile(project.expIDMap[genomeName])
+            experiment = ExperimentWrapper(ET.parse(experimentFilePath).getroot())
+
+            outgroups = experiment.getOutgroupEvents()
+            expTreeString = NXNewick().writeString(experiment.getTree())
+            assert len(expTreeString) > 1
+            assert experiment.getHalID() is not None
+            assert experiment.getHalFastaID() is not None
+            subHALPath = job.fileStore.readGlobalFile(experiment.getHalID())
+            halFastaPath = job.fileStore.readGlobalFile(experiment.getHalFastaID())
+
+            cmdline = "halAppendCactusSubtree \'{0}\' \'{1}\' \'{2}\' \'{3}\'".format(subHALPath, halFastaPath, expTreeString, HALPath)
+            
+            if len(outgroups) > 0:
+                cmdline += " --outgroups {0}".format(",".join(outgroups))
+            if cacheBytes is not None:
+                cmdline += " --cacheBytes {0}".format(cacheBytes)
+            if cacheMDC is not None:
+                cmdline += " --cacheMDC {0}".format(cacheMDC)
+            if cacheRDC is not None:
+                cmdline += " --cacheRDC {0}".format(cacheRDC)
+            if cacheW0 is not None:
+                cmdline += " --cacheW0 {0}".format(cacheW0)
+            if chunk is not None:
+                cmdline += " --chunk {0}".format(chunk)
+            if deflate is not None:
+                cmdline += " --deflate {0}".format(deflate)
+            if inMemory is True:
+                cmdline += " --inMemory"
+
+            
+            print cmdline
+            #appendTime = time.time()
+            system(cmdline)
+            #appendTime = time.time() - appendTime
+            #totalAppendTime += appendTime
+#            print "time of above command: {0:.2f}".format(appendTime)
+ 
+    #totalTime = time.time() - totalTime
+    #print "total time: {0:.2f}  total halAppendCactusSubtree time: {1:.2f}".format(totalTime, totalAppendTime)
+    return job.fileStore.writeGlobalFile(HALPath)
+
 def main():
     args = initParser()
     myProj = MultiCactusProject()
@@ -64,63 +129,12 @@ def main():
         # Overwrite existing hal
         print 'rm -f {0}'.format(args['HAL_file_path'])
         system('rm -f {0}'.format(args['HAL_file_path']))
-
-    # some quick stats
-    totalTime = time.time()
-    totalAppendTime = 0
-
-    # traverse tree to make sure we are going breadth-first
-    tree = myProj.mcTree
-
-    # find subtree if event specified
     event = args['event']
-    rootNode = None
-    if event is not None:
-        assert event in tree.nameToId and not tree.isLeaf(tree.nameToId[event])
-        rootNode = tree.nameToId[event]
+    HALPath = args['HAL_file_path']
+    with Toil(args) as toil:
+        toil.start(Job.wrapJobFn(exportHal, myProj, HALPath, event=event))
 
-    for node in tree.breadthFirstTraversal(rootNode):
-        genomeName = tree.getName(node)
-        if genomeName in myProj.expMap:
-            experimentFilePath = myProj.expMap[genomeName]
-            experiment = ExperimentWrapper(ET.parse(experimentFilePath).getroot())
-
-            outgroups = experiment.getOutgroupEvents()
-            expTreeString = NXNewick().writeString(experiment.getTree())
-            assert len(expTreeString) > 1
-            assert experiment.getHALPath() is not None
-            assert experiment.getHALFastaPath() is not None
-
-            cmdline = "time halAppendCactusSubtree \'{0}\' \'{1}\' \'{2}\' \'{3}\'".format(experiment.getHALPath(), experiment.getHALFastaPath(), expTreeString, args['HAL_file_path'])
-            
-            if len(outgroups) > 0:
-                cmdline += " --outgroups {0}".format(",".join(outgroups))
-            if args["cacheBytes"] is not None:
-                cmdline += " --cacheBytes {0}".format(args["cacheBytes"])
-            if args["cacheMDC"] is not None:
-                cmdline += " --cacheMDC {0}".format(args["cacheMDC"])
-            if args["cacheRDC"] is not None:
-                cmdline += " --cacheRDC {0}".format(args["cacheRDC"])
-            if args["cacheW0"] is not None:
-                cmdline += " --cacheW0 {0}".format(args["cacheW0"])
-            if args["chunk"] is not None:
-                cmdline += " --chunk {0}".format(args["chunk"])
-            if args["deflate"] is not None:
-                cmdline += " --deflate {0}".format(args["deflate"])
-            if args["inMemory"] is True:
-                cmdline += " --inMemory"
-
-            
-            print cmdline
-            appendTime = time.time()
-            system(cmdline)
-            appendTime = time.time() - appendTime
-            totalAppendTime += appendTime
-#            print "time of above command: {0:.2f}".format(appendTime)
- 
-    totalTime = time.time() - totalTime
-    print "total time: {0:.2f}  total halAppendCactusSubtree time: {1:.2f}".format(totalTime, totalAppendTime)
-                         
+                             
 if __name__ == "__main__":
     main();
     raise SystemExit 

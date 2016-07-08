@@ -28,6 +28,6 @@ ${binPath}/halAppendCactusSubtree : ${libPath}/cactus2halLib.a src/halAppendCact
 #${binPath}/importCactusTests :  ${libPath}/cactus2halLib.a ${libTests} ${libTestsHeaders} 
 #	${cpp} ${cppflags} -I inc -I src -I tests -o ${binPath}/importCactusTests ${libTests} ${libPath}/cactus2halLib.a ${basicLibs}
 
-${binPath}/cactus2hal.py : src/cactus2hal.py
-	cp src/cactus2hal.py ${binPath}/cactus2hal.py
+${binPath}/cactus2hal.py : cactus2hal.py
+	cp cactus2hal.py ${binPath}/cactus2hal.py
 	chmod +x ${binPath}/cactus2hal.py
