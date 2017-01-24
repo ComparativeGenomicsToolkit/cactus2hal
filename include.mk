@@ -5,7 +5,7 @@ libPath=${rootPath}lib/
 sonLibRootPath=${rootPath}/../sonLib
 sonLibPath=${sonLibRootPath}/lib
 
-cactusRootPath=${rootPath}/../cactus
+cactusRootPath=${rootPath}/../../
 cactusPath=${cactusRootPath}/lib
 
 halRootPath=${rootPath}/../hal
