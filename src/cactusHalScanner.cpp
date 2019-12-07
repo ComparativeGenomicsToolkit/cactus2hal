@@ -24,13 +24,13 @@ CactusHalScanner::~CactusHalScanner()
 
 }
 
-void CactusHalScanner::scan(const std::string& halFilePath)
+void CactusHalScanner::scan(const std::string& c2hFilePath)
 {
-  _halFile.open(halFilePath.c_str());
+  _c2hFile.open(c2hFilePath.c_str());
 
-  if (!_halFile)
+  if (!_c2hFile)
   {
-    throw runtime_error("error opening path: " + halFilePath);
+    throw runtime_error("error opening path: " + c2hFilePath);
   }
   
   string buffer;
@@ -39,14 +39,14 @@ void CactusHalScanner::scan(const std::string& halFilePath)
   CactusHalTopSegment tsegBuffer;
 
   bool isBottom = false;
-  while (!_halFile.eof() && _halFile.good())
+  while (!_c2hFile.eof() && _c2hFile.good())
   {
     buffer.clear();
-    _halFile >> buffer;
+    _c2hFile >> buffer;
     if (buffer == "s")
     {
-      _halFile >> sequenceBuffer;
-      if (!_halFile.good())
+      _c2hFile >> sequenceBuffer;
+      if (!_c2hFile.good())
       {
         throw runtime_error("error parsing sequence " + 
                             sequenceBuffer._name);
@@ -58,8 +58,8 @@ void CactusHalScanner::scan(const std::string& halFilePath)
     {
       if (isBottom == true)
       {
-        _halFile >> bsegBuffer;
-        if (!_halFile.good())
+        _c2hFile >> bsegBuffer;
+        if (!_c2hFile.good())
         {
           stringstream ss;
           ss << "error parsing bottom segment with name " 
@@ -72,7 +72,7 @@ void CactusHalScanner::scan(const std::string& halFilePath)
       }
       else
       {
-        _halFile >> tsegBuffer;
+        _c2hFile >> tsegBuffer;
         // don't check errors here for now.  somehow whitespace
         // eater doesn't work all the time, and file gets left in 
         // bad state even when it's ok. 
@@ -86,7 +86,7 @@ void CactusHalScanner::scan(const std::string& halFilePath)
   }
 
   scanEndOfFile();  
-  _halFile.close();
+  _c2hFile.close();
 }
 
 

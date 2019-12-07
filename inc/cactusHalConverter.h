@@ -29,7 +29,7 @@ public:
    CactusHalConverter();
    ~CactusHalConverter();
 
-   void convert(const std::string& halFilePath,
+   void convert(const std::string& c2hFilePath,
                 const std::string& faFilePath,
                 const std::string& treeString,
                 hal::AlignmentPtr alignment,
@@ -55,7 +55,7 @@ protected:
 
 protected:
    
-   std::string _halFilePath;
+   std::string _c2hFilePath;
    std::string _faFilePath;
    std::string _outDbPath;
    std::string _treeString;

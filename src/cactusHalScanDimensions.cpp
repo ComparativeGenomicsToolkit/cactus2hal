@@ -32,7 +32,7 @@ const GenMapType* CactusHalScanDimensions::getDimensionsMap() const
   return &_genomeMap;
 }
 
-void CactusHalScanDimensions::scanDimensions(const string& halFilePath,
+void CactusHalScanDimensions::scanDimensions(const string& c2hFilePath,
                                              const string& fastaFilePath)
 {
   GenMapType::iterator i;
@@ -43,7 +43,7 @@ void CactusHalScanDimensions::scanDimensions(const string& halFilePath,
   _genomeMap.clear();
   resetCurrent();
   _faReader.open(fastaFilePath);
-  scan(halFilePath);
+  scan(c2hFilePath);
 }
 
 void CactusHalScanDimensions::scanSequence(CactusHalSequence& sequence)

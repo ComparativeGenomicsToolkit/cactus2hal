@@ -29,14 +29,14 @@ CactusHalConverter::~CactusHalConverter()
  
 }
 
-void CactusHalConverter::convert(const string& halFilePath,
+void CactusHalConverter::convert(const string& c2hFilePath,
                                  const string& faFilePath,
                                  const string& treeString,
                                  AlignmentPtr alignment,
                                  const vector<string>& outgroups)
 {
   clear();
-  _halFilePath = halFilePath;
+  _c2hFilePath = c2hFilePath;
   _faFilePath = faFilePath;
   _outgroups = set<string>(outgroups.begin(), outgroups.end());
   _alignment = alignment;
@@ -68,7 +68,7 @@ void CactusHalConverter::convertGenomes()
   vector<pair<Genome*, bool> > inputGenomes;
 
   //pass 1: scan the genome dimensions from the .hal
-  _dimensionScanner.scanDimensions(_halFilePath, _faFilePath);
+  _dimensionScanner.scanDimensions(_c2hFilePath, _faFilePath);
   const GenMapType* genMap = _dimensionScanner.getDimensionsMap();
   
   //iterate over input tree, using map to set the information for each
@@ -87,7 +87,6 @@ void CactusHalConverter::convertGenomes()
     string name = stTree_getLabel(node);
     bool existingGenome = false;
     bfQueue.pop_front();
-    GenMapType::const_iterator mapIt = genMap->find(name);
     
     //case 1: add a new root to the alignment
     if (_alignment->getNumGenomes() == 0)
@@ -208,10 +207,9 @@ void CactusHalConverter::setGenomeDimensions(
 void CactusHalConverter::setGenomeSequenceStrings(Genome* genome)
 {
   string buffer;
-  SequenceIteratorPtr sequenceIterator = genome->getSequenceIterator();
-  SequenceIteratorConstPtr end = genome->getSequenceEndIterator();
   bool castWarning = false;
-  for (; sequenceIterator != end; sequenceIterator->toNext())
+  for (SequenceIteratorPtr sequenceIterator = genome->getSequenceIterator();
+       not sequenceIterator->atEnd(); sequenceIterator->toNext())
   {
     hal::Sequence* sequence = sequenceIterator->getSequence();
     if (sequence->getSequenceLength() > 0)
@@ -256,7 +254,7 @@ void CactusHalConverter::setGenomeSequenceStrings(Genome* genome)
 
 void CactusHalConverter::convertSegments()
 {
-  scan(_halFilePath);
+  scan(_c2hFilePath);
 }
 
 void CactusHalConverter::scanSequence(CactusHalSequence& sequence)
@@ -455,7 +453,7 @@ void CactusHalConverter::updateParseInfo()
 
     // search for and update any bottom segments that may use the top
     // segment as a parse index
-    BottomSegmentIteratorPtr bottomParseIterator2 = _bottomParseIterator->copy();
+    BottomSegmentIteratorPtr bottomParseIterator2(_bottomParseIterator->clone());
     BottomSegment* bottomSeg2 = bottomParseIterator2->getBottomSegment();
 
     // scan to the leftmost candidate
@@ -494,10 +492,8 @@ void CactusHalConverter::updateRootParseInfo()
   
   BottomSegmentIteratorPtr bottomIterator = rootGenome->getBottomSegmentIterator();
   TopSegmentIteratorPtr topIterator = rootGenome->getTopSegmentIterator();
-  BottomSegmentIteratorConstPtr bend = rootGenome->getBottomSegmentEndIterator();
-  TopSegmentIteratorConstPtr tend = rootGenome->getTopSegmentEndIterator();
 
-  while (bottomIterator != bend && topIterator != tend)
+  while ((not bottomIterator->atEnd()) && (not topIterator->atEnd()))
   {
     bool bright = false;
     bool tright = false;

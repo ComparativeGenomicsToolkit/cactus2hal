@@ -42,3 +42,4 @@ ifdef ENABLE_UDC
 endif
 
 
+cppflags += -I ../hal/api/inc

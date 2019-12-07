@@ -30,7 +30,7 @@ public:
    CactusHalScanner();
    virtual ~CactusHalScanner();
 
-   void scan(const std::string& halFilePath);
+   void scan(const std::string& c2hFilePath);
 
 
 protected:
@@ -42,7 +42,7 @@ protected:
 
 protected:
 
-   std::ifstream _halFile;
+   std::ifstream _c2hFile;
 };
 
 #endif

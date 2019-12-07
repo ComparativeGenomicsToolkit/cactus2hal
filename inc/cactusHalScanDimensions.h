@@ -27,7 +27,7 @@ public:
 
    const GenMapType* getDimensionsMap() const;
 
-   void scanDimensions(const std::string& halFilePath,
+   void scanDimensions(const std::string& c2hFilePath,
                        const std::string& fastaFilePath);
 
    void getSequence(const std::string& genomeName, 
