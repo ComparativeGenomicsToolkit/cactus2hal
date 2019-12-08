@@ -6,17 +6,19 @@ sonLibRootPath=${rootPath}/../sonLib
 sonLibPath=${sonLibRootPath}/lib
 
 cactusRootPath=${rootPath}/../../
-cactusPath=${cactusRootPath}/lib
 
 halRootPath=${rootPath}/../hal
 halPath=${halRootPath}/lib
 
 include  ${sonLibRootPath}/include.mk
+include  ${sonLibRootPath}/include.mk
 
 dataSetsPath=/Users/hickey/Documents/Devel/genomes/datasets
 
-cflags += -I ${sonLibPath} -I ${cactusPath} -I ${halPath} ${tokyoCabinetIncl} ${kyotoTycoonIncl}
-cppflags += -I ${sonLibPath} -I ${cactusPath} -I ${halPath} ${tokyoCabinetIncl} ${kyotoTycoonIncl} -D__STDC_LIMIT_MACROS -Wno-deprecated
+incls = -I ${sonLibPath} -I ${cactusRootPath}/api/inc -I ${halPath} ${tokyoCabinetIncl} ${kyotoTycoonIncl}
+
+cflags += ${incls}
+cppflags += ${incls} -D__STDC_LIMIT_MACROS -Wno-deprecated
 basicLibs = ${halPath}/halLib.a ${sonLibPath}/sonLib.a ${sonLibPath}/cuTest.a 
 basicLibsDependencies = ${basicLibs}
 
