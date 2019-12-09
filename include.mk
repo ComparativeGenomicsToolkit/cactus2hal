@@ -18,7 +18,7 @@ dataSetsPath=/Users/hickey/Documents/Devel/genomes/datasets
 incls = -I ${sonLibPath} -I ${cactusRootPath}/api/inc -I ${halPath} ${tokyoCabinetIncl} ${kyotoTycoonIncl}
 
 cflags += ${incls}
-cppflags += ${incls} -D__STDC_LIMIT_MACROS -Wno-deprecated
+cppflags += ${incls} -D__STDC_LIMIT_MACROS -Wno-deprecated -std=c++11 -Wno-sign-compare
 basicLibs = ${halPath}/halLib.a ${sonLibPath}/sonLib.a ${sonLibPath}/cuTest.a 
 basicLibsDependencies = ${basicLibs}
 
