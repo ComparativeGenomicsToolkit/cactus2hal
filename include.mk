@@ -11,9 +11,9 @@ halRootPath=${rootPath}/../hal
 halPath=${halRootPath}/lib
 
 include  ${sonLibRootPath}/include.mk
-include  ${sonLibRootPath}/include.mk
-
-dataSetsPath=/Users/hickey/Documents/Devel/genomes/datasets
+ifeq (${CXX_ABI_DEF},)
+    CXX_ABI_DEF = -D_GLIBCXX_USE_CXX11_ABI=1
+endif
 
 incls = -I ${sonLibPath} -I ${cactusRootPath}/api/inc -I ${halPath} ${tokyoCabinetIncl} ${kyotoTycoonIncl}
 
@@ -31,17 +31,5 @@ HDF5_CCLINKER = ${cxx}
 cpp = h5c++ ${h5prefix}
 cxx = h5cc ${h5prefix}
 
-# add compiler flag and kent paths if udc is enabled
-# relies on KENTSRC containing path to top level kent/ dir
-# and MACHTYPE being specified
-ifdef ENABLE_UDC
-#  Find samtabix as in kent/src/inc/common.mk:
-	ifeq (${SAMTABIXDIR},)
-		SAMTABIXDIR = /hive/data/outside/samtabix/${MACHTYPE}
-	endif
 
-	basicLibs += ${KENTSRC}/src/lib/${MACHTYPE}/jkweb.a  ${SAMTABIXDIR}/libsamtabix.a -lssl -lcrypto
-endif
-
-
-cppflags += -I ../hal/api/inc
+cppflags += -I ../hal/api/inc  ${CXX_ABI_DEF} -std=c++11
