@@ -61,7 +61,10 @@ int main(int argc, char** argv)
       throw hal_exception("Error opening" + c2hFilePath);
     }
 
-    AlignmentPtr alignment(openHalAlignment(outputPath, &optionsParser, READ_ACCESS | WRITE_ACCESS | CREATE_ACCESS));
+    bool exists = ifstream(outputPath.c_str()).good();
+
+    AlignmentPtr alignment(openHalAlignment(outputPath, &optionsParser,
+                                            READ_ACCESS | WRITE_ACCESS | (exists ? 0 : CREATE_ACCESS)));
 
     CactusHalConverter converter;
     converter.convert(c2hFilePath, faFilePath, treeString, alignment, 
