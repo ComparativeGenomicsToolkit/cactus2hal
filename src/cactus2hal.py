@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ########################################################################
 # File:cactus2HAL.py
@@ -62,7 +62,7 @@ def main():
 
     if not args['append']:
         # Overwrite existing hal
-        print 'rm -f {0}'.format(args['HAL_file_path'])
+        print('rm -f {0}'.format(args['HAL_file_path']))
         system('rm -f {0}'.format(args['HAL_file_path']))
 
     # some quick stats
@@ -111,7 +111,7 @@ def main():
                 cmdline += " --inMemory"
 
             
-            print cmdline
+            print(cmdline)
             appendTime = time.time()
             system(cmdline)
             appendTime = time.time() - appendTime
@@ -119,7 +119,7 @@ def main():
 #            print "time of above command: {0:.2f}".format(appendTime)
  
     totalTime = time.time() - totalTime
-    print "total time: {0:.2f}  total halAppendCactusSubtree time: {1:.2f}".format(totalTime, totalAppendTime)
+    print("total time: {0:.2f}  total halAppendCactusSubtree time: {1:.2f}".format(totalTime, totalAppendTime))
                          
 if __name__ == "__main__":
     main();
