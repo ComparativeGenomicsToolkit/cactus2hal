@@ -7,27 +7,23 @@ libHeaders = inc/*.h
 libTests = tests/*.cpp
 libTestsHeaders = tests/*.h 
 
-all : ${libPath}/cactus2halLib.a ${binPath}/halAppendCactusSubtree ${binPath}/cactus2hal.py #${binPath}/importCactusTests 
+all : ${LIBDIR}/cactus2halLib.a ${BINDIR}/halAppendCactusSubtree ${BINDIR}/cactus2hal.py #${BINDIR}/importCactusTests 
 
 clean : 
-	rm -f ${libPath}/cactus2halLib.a ${binPath}/halAppendCactusSubtree ${binPath}/cactus2hal.py #${binPath}/importCactusTests *.o
+	rm -f ${LIBDIR}/cactus2halLib.a ${BINDIR}/halAppendCactusSubtree ${BINDIR}/cactus2hal.py ${BINDIR}/importCactusTests *.o
 
 test: all
 #	${PYTHON} tests/allTests.py
 
-${libPath}/cactus2halLib.a : ${libSources} ${libHeaders} ${basicLibsDependencies} 
-	${cpp} ${cppflags} -I inc -I src -c ${libSources}
-	ar rc cactus2halLib.a *.o
-	ranlib cactus2halLib.a 
-	rm *.o
-	mv cactus2halLib.a ${libPath}/
+${LIBDIR}/cactus2halLib.a : ${libSources} ${libHeaders} ${LIBDEPENDS} 
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -I inc -I src -c ${libSources}
+	${AR} rc cactus2halLib.a *.o
+	${RANLIB} cactus2halLib.a 
+	mv cactus2halLib.a ${LIBDIR}/
 
-${binPath}/halAppendCactusSubtree : ${libPath}/cactus2halLib.a src/halAppendCactusSubtree.cpp
-	${cpp} ${cppflags} -I inc -I src -o ${binPath}/halAppendCactusSubtree src/halAppendCactusSubtree.cpp ${libPath}/cactus2halLib.a ${basicLibs} 
+${BINDIR}/halAppendCactusSubtree : ${LIBDIR}/cactus2halLib.a src/halAppendCactusSubtree.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} -I inc -I src -o ${BINDIR}/halAppendCactusSubtree src/halAppendCactusSubtree.cpp ${LIBDIR}/cactus2halLib.a ${LDLIBS} ${LIBS}
 
-#${binPath}/importCactusTests :  ${libPath}/cactus2halLib.a ${libTests} ${libTestsHeaders} 
-#	${cpp} ${cppflags} -I inc -I src -I tests -o ${binPath}/importCactusTests ${libTests} ${libPath}/cactus2halLib.a ${basicLibs}
-
-${binPath}/cactus2hal.py : src/cactus2hal.py
-	cp src/cactus2hal.py ${binPath}/cactus2hal.py
-	chmod +x ${binPath}/cactus2hal.py
+${BINDIR}/cactus2hal.py : src/cactus2hal.py
+	cp src/cactus2hal.py ${BINDIR}/cactus2hal.py
+	chmod +x ${BINDIR}/cactus2hal.py
