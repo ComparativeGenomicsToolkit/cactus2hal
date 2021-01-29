@@ -12,7 +12,7 @@
 
 #include "hal.h"
 extern "C" {
-#include "cactus.h"
+#include "cactusGlobals.h"
 }
 
 /** structure containing the information from a bottom segment line of 

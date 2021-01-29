@@ -13,7 +13,7 @@
 
 #include "hal.h"
 extern "C" {
-#include "cactus.h"
+#include "cactusGlobals.h"
 }
 
 struct CactusHalTopSegment

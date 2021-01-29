@@ -13,7 +13,7 @@
 extern "C" {
 #include "commonC.h"
 #include "sonLib.h"
-#include "cactus.h"
+#include "cactusGlobals.h"
 }
 
 #include "cactusHalTopSegment.h"
