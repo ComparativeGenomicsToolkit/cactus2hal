@@ -1,4 +1,5 @@
 rootPath = ./
+rootDir = ./
 include ./include.mk
 
 libSources = src/*.cpp
