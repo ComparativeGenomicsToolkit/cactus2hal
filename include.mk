@@ -10,7 +10,7 @@ cactusRootPath=${rootPath}/../../
 halRootPath=${rootPath}/../hal
 halPath=${halRootPath}/lib
 
-include  ${sonLibRootDir}/include.mk
+include ${halRootPath}/include.mk
 ifeq (${CXX_ABI_DEF},)
     CXX_ABI_DEF = -D_GLIBCXX_USE_CXX11_ABI=1
 endif
@@ -19,8 +19,9 @@ incls = -I ${sonLibDir} -I ${cactusRootPath}/api/inc -I ${halPath} ${tokyoCabine
 
 CFLAGS += ${incls}
 CXXFLAGS += ${incls} -D__STDC_LIMIT_MACROS -Wno-deprecated -std=c++11 -Wno-sign-compare
-LDLIBS = ${halPath}/halLib.a ${sonLibDir}/sonLib.a ${sonLibDir}/cuTest.a 
-LIBDEPENDS = ${LDLIBS}
+LIBDEPENDS = ${halPath}/halLib.a ${sonLibDir}/sonLib.a ${sonLibDir}/cuTest.a 
+LDLIBS_HAL = ${LIBDEPENDS} ${LDLIBS}
+LDLIBS := ${LDLIBS_HAL}
 
 # hdf5 compilation is done through its wrappers.
 # we can speficy our own (sonlib) compilers with these variables:
