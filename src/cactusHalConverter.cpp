@@ -31,7 +31,7 @@ CactusHalConverter::~CactusHalConverter()
 
 void CactusHalConverter::convert(const string& c2hFilePath,
                                  const string& faFilePath,
-                                 const string& treeString,
+                                 const string& treePath,
                                  AlignmentPtr alignment,
                                  const vector<string>& outgroups)
 {
@@ -40,7 +40,7 @@ void CactusHalConverter::convert(const string& c2hFilePath,
   _faFilePath = faFilePath;
   _outgroups = set<string>(outgroups.begin(), outgroups.end());
   _alignment = alignment;
-  _treeString = treeString;
+  _treePath = treePath;
   convertGenomes();
   convertSegments();
   updateRootParseInfo();
@@ -67,6 +67,16 @@ void CactusHalConverter::convertGenomes()
 {
   vector<pair<Genome*, bool> > inputGenomes;
 
+  // read the tree from file
+  ifstream treeFile(_treePath);
+  if (!treeFile) {
+    throw hal_exception("unable to open tree file: " + _treePath);
+  }
+  treeFile >> _treeString;
+  if (_treeString.empty() || _treeString.back() != ';') {
+    throw hal_exception("invalid or empty tree parsed from: " + _treePath);
+  }
+  
   //pass 1: scan the genome dimensions from the .hal
   _dimensionScanner.scanDimensions(_c2hFilePath, _faFilePath);
   const GenMapType* genMap = _dimensionScanner.getDimensionsMap();

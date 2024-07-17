@@ -31,7 +31,7 @@ public:
 
    void convert(const std::string& c2hFilePath,
                 const std::string& faFilePath,
-                const std::string& treeString,
+                const std::string& treePath,
                 hal::AlignmentPtr alignment,
                 const std::vector<std::string>& outgroups);
 
@@ -58,6 +58,7 @@ protected:
    std::string _c2hFilePath;
    std::string _faFilePath;
    std::string _outDbPath;
+   std::string _treePath;
    std::string _treeString;
    CactusHalScanDimensions _dimensionScanner;
    std::set<std::string> _outgroups;
