@@ -22,8 +22,8 @@ int main(int argc, char** argv)
                             "path to cactus hal file to import");
   optionsParser.addArgument("cactus .fa file", 
                             "path to cactus sequences file to import");
-  optionsParser.addArgument("newick tree", 
-                            "event tree for cactus db in Newick format");
+  optionsParser.addArgument("newick tree file", 
+                            "path to event tree for cactus db in Newick format");
   optionsParser.addArgument("output hal path",
                             "path of hal file to append cactus subtree");
   optionsParser.addOption("outgroups",
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
   {
     string c2hFilePath = optionsParser.getArgument<string>("cactus .c2h file");
     string faFilePath = optionsParser.getArgument<string>("cactus .fa file");
-    string treeString = optionsParser.getArgument<string>("newick tree");
+    string treePath = optionsParser.getArgument<string>("newick tree file");
     string outputPath = optionsParser.getArgument<string>("output hal path");
     string ogString = optionsParser.getOption<string>("outgroups");
     vector<string> outgroups;
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
                                             READ_ACCESS | WRITE_ACCESS | (exists ? 0 : CREATE_ACCESS)));
 
     CactusHalConverter converter;
-    converter.convert(c2hFilePath, faFilePath, treeString, alignment, 
+    converter.convert(c2hFilePath, faFilePath, treePath, alignment, 
                       outgroups);
   }
   catch(hal_exception& e)
